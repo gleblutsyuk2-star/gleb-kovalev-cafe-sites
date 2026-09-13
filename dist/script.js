@@ -7,12 +7,6 @@ mobileNav.querySelectorAll('a').forEach(link=>link.addEventListener('click',clos
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!mobileNav.hidden){closeMenu();menuButton.focus();}});
 window.matchMedia('(min-width:621px)').addEventListener('change',closeMenu);
 document.querySelectorAll('[data-package]').forEach(link=>link.addEventListener('click',()=>{document.getElementById('project-format').value=link.dataset.package;}));
-const rail=document.querySelector('.case-rail');
-const previous=document.getElementById('case-prev');
-const next=document.getElementById('case-next');
-function updateRail(){previous.disabled=rail.scrollLeft<5;next.disabled=rail.scrollLeft+rail.clientWidth>=rail.scrollWidth-5;}
-function moveRail(direction){rail.scrollBy({left:direction*(rail.querySelector('.case-card').getBoundingClientRect().width+parseFloat(getComputedStyle(rail).gap)),behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});}
-previous.addEventListener('click',()=>moveRail(-1));next.addEventListener('click',()=>moveRail(1));rail.addEventListener('scroll',updateRail,{passive:true});window.addEventListener('resize',updateRail);updateRail();
 const privacy=document.getElementById('privacy-dialog');
 document.querySelectorAll('.privacy-trigger').forEach(button=>button.addEventListener('click',()=>privacy.showModal()));
 document.getElementById('close-privacy').addEventListener('click',()=>privacy.close());
@@ -45,4 +39,4 @@ contactForm.addEventListener('submit',async event=>{
   }catch(error){setStatus('Не удалось подтвердить отправку. Данные остались в форме — попробуйте ещё раз или напишите в Telegram.','error');}
   finally{clearTimeout(timeout);submitting=false;submitButton.disabled=false;submitButton.replaceChildren(document.createTextNode('Отправить заявку '));const arrow=document.createElement('span');arrow.setAttribute('aria-hidden','true');arrow.textContent='↗';submitButton.append(arrow);}
 });
-if('IntersectionObserver'in window&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}});},{threshold:.08});document.querySelectorAll('.statement,.included,.process-list,.about-grid').forEach(element=>{element.classList.add('js-reveal');observer.observe(element);});}
+if('IntersectionObserver'in window&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}});},{threshold:.08});document.querySelectorAll('.included,.process-list,.about-grid').forEach(element=>{element.classList.add('js-reveal');observer.observe(element);});}

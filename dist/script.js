@@ -1,4 +1,24 @@
 'use strict';
+const rail=document.getElementById('case-rail');
+const previousCase=document.getElementById('case-prev');
+const nextCase=document.getElementById('case-next');
+function updateCases(){
+  previousCase.disabled=rail.scrollLeft<=2;
+  nextCase.disabled=rail.scrollLeft>=rail.scrollWidth-rail.clientWidth-2;
+}
+function moveCase(direction){
+  const distance=rail.querySelector('.case-card').getBoundingClientRect().width+parseFloat(getComputedStyle(rail).gap);
+  rail.scrollBy({left:direction*distance,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
+}
+previousCase.addEventListener('click',()=>moveCase(-1));
+nextCase.addEventListener('click',()=>moveCase(1));
+rail.addEventListener('scroll',updateCases,{passive:true});
+rail.addEventListener('keydown',event=>{
+  if(event.target!==rail)return;
+  if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();moveCase(event.key==='ArrowLeft'?-1:1);}
+});
+new ResizeObserver(updateCases).observe(rail);
+updateCases();
 const menuButton = document.querySelector('.menu-toggle');
 const mobileNav = document.getElementById('mobile-nav');
 function closeMenu(){menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Открыть меню');mobileNav.hidden=true;}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 80" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">Глеб Ковалёв — сайты для кафе</title>
+  <desc id="logo-desc">Кофейная чашка, собранная из модульной сетки сайта</desc>
+  <g fill="none" stroke="#4f5b36" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M16 27h50v21c0 14-10.8 24-25 24S16 62 16 48V27Z"/>
+    <path d="M66 35h7.5C80 35 84 39.2 84 45s-4 10-10.5 10H64"/>
+    <path d="M30 18c-4-4 4-6 0-10M46 18c-4-4 4-6 0-10"/>
+  </g>
+  <g fill="#7d8769">
+    <rect x="27" y="38" width="9" height="22" rx="2"/>
+    <rect x="41" y="38" width="15" height="8" rx="2"/>
+    <rect x="41" y="51" width="15" height="9" rx="2"/>
+  </g>
+</svg>

@@ -217,3 +217,5 @@ h2, .cases-section .section-top h2 { font-size: clamp(38px, 3.6vw, 56px); }
   .benefits-grid svg { margin-bottom: 16px; }
   .included h2 { margin-bottom: 24px; }
 }
+.brand-mark { width: 56px; height: 40px; }
+@media (max-width: 620px) { .brand-mark { width: 48px; height: 34px; } }

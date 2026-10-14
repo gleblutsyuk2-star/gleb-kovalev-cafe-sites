@@ -1,1 +1,15 @@
-{"name":"gleb-kovalev-cafe-sites","version":"1.0.0","private":true,"description":"Personal website for Gleb Kovalev — websites for cafes","scripts":{"dev":"node server.mjs","check":"node --check dist/script.js && node --check server.mjs"}}
+{
+  "name": "gleb-kovalev-business-sites",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Gleb Kovalev — web design and development for business",
+  "scripts": {
+    "dev": "node server.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "node tests/browser.mjs",
+    "check": "node --check dist/script.js && node --check server.mjs && npm test"
+  },
+  "dependencies": { "gsap": "3.15.0", "three": "0.186.1" },
+  "devDependencies": { "esbuild": "0.28.2", "@playwright/test": "1.56.1" }
+}

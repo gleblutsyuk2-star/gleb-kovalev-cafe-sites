@@ -156,7 +156,7 @@ try {
     }
   });
   await check('business offer and service routes',async()=>{
-    assert.match(await page.locator('h1').innerText(),/Сайты для бизнеса/);
+    assert.match(await page.locator('h1').innerText(),/ваш бизнес/);
     assert.equal(await page.locator('.service-card a[href^="/uslugi/"]').count(),3);
     for(const url of ['/uslugi/lending/','/uslugi/sayt-kompanii/','/uslugi/internet-magazin/'])assert.equal((await page.request.get(base+url)).status(),200);
   });
@@ -164,7 +164,7 @@ try {
     await page.setViewportSize({width,height:900});await page.goto(base);
     await page.waitForSelector('.hero-scene[data-rendered="true"]');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'horizontal overflow');
-    assert.equal(await page.locator('.gallery-fallback .project-card').count(),3);
+    assert.equal(await page.locator('.gallery-fallback .project-card').count(),5);
     await page.screenshot({path:'artifacts/redesign/hero-'+width+'.png'});
     await page.locator('#cases').scrollIntoViewIfNeeded();
     await page.waitForSelector('.project-gallery.is-webgl[data-rendered="true"]');
@@ -191,12 +191,12 @@ try {
     await page.waitForFunction(value=>scrollY>value+50,before);
   });
   await check('full gallery uses same projects, wheel and keyboard',async()=>{
-    await page.goto(base+'/projects/');await page.waitForSelector('.project-gallery.is-webgl');
+    await page.goto(base+'/projects/');await page.locator('.project-gallery').scrollIntoViewIfNeeded();await page.waitForSelector('.project-gallery.is-webgl');
     await page.mouse.move(700,450);await page.mouse.wheel(0,250);
     await page.waitForFunction(()=>document.querySelector('[data-project-name]').textContent!=='Переговорка');
     await page.locator('.gallery-stage').focus();await page.keyboard.press('Home');
     await page.waitForFunction(()=>document.querySelector('[data-project-name]').textContent==='Переговорка');
-    await page.keyboard.press('ArrowLeft');await page.waitForFunction(()=>document.querySelector('[data-project-name]').textContent==='Вкусное место');
+    await page.keyboard.press('ArrowLeft');await page.waitForFunction(()=>document.querySelector('[data-project-name]').textContent==='DrivePro');
     await page.waitForFunction(()=>document.querySelector('[data-gallery]').dataset.settled==='true');
     await page.locator('.projects-intro h1').click();
     await page.screenshot({path:'artifacts/redesign/projects-1440.png'});
@@ -293,7 +293,7 @@ try {
     }finally{await c.close();}
   });
   await check('context loss preserves static links and controls do not return',async()=>{
-    await page.goto(base+'/projects/');await page.waitForSelector('.project-gallery.is-webgl');
+    await page.goto(base+'/projects/');await page.locator('.project-gallery').scrollIntoViewIfNeeded();await page.waitForSelector('.project-gallery.is-webgl');
     await page.evaluate(()=>document.querySelector('.gallery-canvas canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
     await page.waitForFunction(()=>!document.querySelector('.project-gallery').classList.contains('is-webgl'));
     assert.equal(await page.locator('.gallery-fallback').isVisible(),true);
@@ -301,10 +301,10 @@ try {
   });
   for(const config of [{javaScriptEnabled:false},{reducedMotion:'reduce'}])await check('static fallback '+JSON.stringify(config),async()=>{
     const c=await browser.newContext(config);const p=await c.newPage();await p.goto(base);
-    assert.equal(await p.locator('.gallery-fallback .project-card').count(),3);
+    assert.equal(await p.locator('.gallery-fallback .project-card').count(),5);
     assert.equal(await p.locator('.gallery-fallback').isVisible(),true);
     assert.equal(await p.locator('.hero-fallback').isVisible(),true);
-    assert.equal(await p.locator('.project-card a').first().getAttribute('href'),'https://peregovorka-cafe.vercel.app/');
+    assert.equal(await p.locator('.project-card a').first().getAttribute('href'),'/projects/peregovorka/');
     await c.close();
   });
   await check('WebGL unavailable falls back',async()=>{

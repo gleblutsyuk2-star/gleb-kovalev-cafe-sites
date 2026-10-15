@@ -2,12 +2,16 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 // Catch broken wrapping, reversed navigation and page-scroll capture.
-test('gallery loops through three real projects in either direction', async () => {
+test('gallery wraps at both boundaries for three and five items', async () => {
   const { projectIndex } = await import('../src/motion-math.mjs');
   assert.equal(projectIndex(0, 3), 0);
   assert.equal(projectIndex(3, 3), 0);
   assert.equal(projectIndex(-1, 3), 2);
   assert.equal(projectIndex(7, 3), 1);
+  assert.equal(projectIndex(4, 5), 4);
+  assert.equal(projectIndex(5, 5), 0);
+  assert.equal(projectIndex(-1, 5), 4);
+  assert.equal(projectIndex(12, 5), 2);
 });
 test('main gallery ignores vertical wheel, full gallery accepts it', async () => {
   const { wheelIntent } = await import('../src/motion-math.mjs');

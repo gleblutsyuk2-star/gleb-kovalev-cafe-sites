@@ -16,16 +16,16 @@ export function mount(host){
   const grid=new GridHelper(50,40,0xa6b8d8,0xcbd6e6);grid.position.set(0,-2.2,-2);grid.material.transparent=true;grid.material.opacity=.38;scene.add(grid);
   for(let i=-3;i<=3;i++){
     const geometry=new PlaneGeometry(8.2,8.2*626/1262,64,8);
-    const material=new MeshBasicMaterial({map:textures[projectIndex(i,3)],side:DoubleSide,toneMapped:false});
+    const material=new MeshBasicMaterial({map:textures[projectIndex(i,projects.length)],side:DoubleSide,toneMapped:false});
     material.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n vec2 corner = max(abs(vMapUv - 0.5) - vec2(0.486, 0.472), 0.0); if (length(corner) > 0.014) discard;');};
     const mesh=new Mesh(geometry,material);mesh.userData.base=i;scene.add(mesh);
     cards.push({mesh,base:geometry.attributes.position.array.slice(),project:-1,virtual:i});
   }
-  const name=host.querySelector('[data-project-name]'),type=host.querySelector('[data-project-type]'),open=host.querySelector('[data-project-open]');
+  const name=host.querySelector('[data-project-name]'),type=host.querySelector('[data-project-type]'),open=host.querySelector('[data-project-open]'),caseLink=host.querySelector('[data-project-case]');
   function updateCaption(){
     const index=projectIndex(state.position,projects.length);
     if(index===lastIndex)return;lastIndex=index;const p=projects[index];
-    name.textContent=p.name;type.textContent=p.category;
+    name.textContent=p.name;type.textContent=p.category;caseLink.href=p.caseUrl;caseLink.setAttribute('aria-label','Разбор проекта: '+p.name);
     open.href=p.url;open.setAttribute('aria-label','Открыть сайт: '+p.name);host.dataset.project=p.id;
   }
   function draw(renderer){
@@ -34,7 +34,7 @@ export function mount(host){
     if(Math.abs(delta)<.0003)state.position=state.target;
     const speed=clamp(delta*.28,-1,1),center=Math.round(state.position);
     for(let i=0;i<cards.length;i++){
-      const card=cards[i],virtual=center+i-3,offset=virtual-state.position,index=projectIndex(virtual,3);
+      const card=cards[i],virtual=center+i-3,offset=virtual-state.position,index=projectIndex(virtual,projects.length);
       card.virtual=virtual;
       if(index!==card.project){card.project=index;card.mesh.material.map=textures[index];}
       const pos=card.mesh.geometry.attributes.position;
@@ -55,7 +55,7 @@ export function mount(host){
     if(event.target!==stage)return;
     if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key)){
       event.preventDefault();
-      if(event.key==='ArrowLeft')prev();if(event.key==='ArrowRight')next();if(event.key==='Home')go(0);if(event.key==='End')go(2);
+      if(event.key==='ArrowLeft')prev();if(event.key==='ArrowRight')next();if(event.key==='Home')go(0);if(event.key==='End')go(projects.length-1);
     }
   }
   stage.addEventListener('keydown',key);

@@ -6,6 +6,8 @@ import {services,faqs} from '../src/content.mjs';
 import {header,footer,serviceIllustration,gallery,pageHead,origin,escapeHtml as e} from '../src/templates.mjs';
 const json=value=>'<script type="application/ld+json">'+JSON.stringify(value).replaceAll('<','\\u003c')+'</script>';
 const person={'@type':'Person','@id':origin+'/#person',name:'Глеб Ковалёв',url:origin+'/',image:origin+'/assets/gleb-portrait-v5.webp',jobTitle:'Дизайнер и разработчик сайтов',email:'glebkovalev077@gmail.com',sameAs:['https://t.me/kovalev_gl']};
+// Keep the no-WebGL/reduced-motion hero consistent with the selected brand mark.
+await writeFile('dist/assets/logo-gk.svg',await readFile('dist/assets/logo-gk-header.svg','utf8'));
 let home=await readFile('src/home.html','utf8');
 const serviceCards='<div class="services-grid">'+services.map(s=>`<article class="service-card"><h3>${s.name}</h3>${serviceIllustration(s.slug)}<p>${s.description}</p><ul>${s.items.map(item=>'<li>'+item+'</li>').join('')}</ul><div class="service-price">от ${new Intl.NumberFormat('ru-RU').format(s.price)} ₽<span>за согласованный объём</span></div><a class="service-cta" href="/uslugi/${s.slug}/">Подробнее о формате <span aria-hidden="true">↗</span></a></article>`).join('')+'</div>';
 home=home.replace('<!-- HEADER -->',header(true)).replace('<!-- FOOTER -->',footer()).replace('<!-- GALLERY -->',gallery()).replace('<!-- SERVICES -->',serviceCards).replace('<!-- FAQ -->',faqs.map(([q,a])=>`<details><summary>${e(q)}<span aria-hidden="true">+</span></summary><p>${e(a)}</p></details>`).join(''));

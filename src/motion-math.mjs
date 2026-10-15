@@ -1,6 +1,10 @@
 export const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 export const projectIndex = (index, count) => ((Math.round(index) % count) + count) % count;
 export const logoCameraDistance = aspect => Math.max(11.7, 7.6 / (2 * Math.tan(38 * Math.PI / 360) * Math.max(.1, aspect)));
+export function logoYawDelta(deltaX,width){
+  if(!Number.isFinite(deltaX)||!Number.isFinite(width)||width<=0)return 0;
+  return clamp(deltaX/width,-1,1)*Math.PI*.9;
+}
 export function wheelIntent(x, y, full) {
   if (full) return Math.abs(x) > Math.abs(y) ? x : y;
   return Math.abs(x) > Math.abs(y) ? x : null;

@@ -15,7 +15,7 @@ const page=await context.newPage();
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 try {
   await page.goto(base);
-  await check('header monogram uses its own asset without replacing hero identity',async()=>{
+  await check('header and hero keep separate assets for the selected GK identity',async()=>{
     const heroSource=await page.locator('.hero-fallback').getAttribute('src');
     const headerSource=await page.locator('.brand-mark').getAttribute('src');
     assert.notEqual(headerSource,heroSource,'header still shares the hero logo asset');
@@ -55,6 +55,45 @@ try {
     assert.ok(pixels.navy>pixels.filled*.45,'selected dark navy face is missing');
     assert.ok(pixels.blue>pixels.filled*.04,'blue bevels are missing');
     assert.deepEqual(pixels.corners,[0,0,0,0],'logo includes a white background instead of transparency');
+  });
+  await check('new GK fallback matches the selected header mark',async()=>{
+    const hero=await page.request.get(base+'/assets/logo-gk.svg');
+    const header=await page.request.get(base+'/assets/logo-gk-header.svg');
+    assert.equal(hero.status(),200);assert.equal(header.status(),200);
+    const normalize=text=>text.replaceAll('\r\n','\n').trim();
+    assert.equal(normalize(await hero.text()),normalize(await header.text()),'static fallback still shows the old rounded GK');
+  });
+  await check('new GK pointer has lower gain and a smooth weighted settling',async()=>{
+    await page.setViewportSize({width:1440,height:900});await page.goto(base);
+    await page.waitForSelector('.hero-scene[data-rendered="true"]');
+    const motion=await page.locator('.logo-canvas').evaluate(async container=>{
+      const host=container.closest('.hero-scene'),b=host.getBoundingClientRect();
+      const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+      const pointer=x=>container.dispatchEvent(new PointerEvent('pointermove',{pointerType:'mouse',clientX:b.left+b.width*x,clientY:b.top+b.height*.5,bubbles:true}));
+      const start=Number(host.dataset.yaw);pointer(.5);pointer(.9);
+      await wait(200);const early=Number(host.dataset.yaw)-start;
+      await wait(1300);const settled=Number(host.dataset.yaw)-start;
+      container.dispatchEvent(new PointerEvent('pointerleave',{pointerType:'mouse'}));
+      return {early,settled};
+    });
+    assert.ok(Math.abs(motion.settled-Math.PI*.36)<.04,'a 40% sweep rotates too far');
+    assert.ok(motion.early>.02,'movement should respond immediately');
+    assert.ok(motion.early<motion.settled*.9,'rotation snaps instead of easing into its final angle');
+  });
+  await check('new GK keeps assembly, three materials and mobile controls',async()=>{
+    await page.setViewportSize({width:390,height:900});await page.goto(base);
+    await page.waitForSelector('.hero-scene[data-rendered="true"]');
+    await page.locator('[data-logo-pose]').click();
+    await page.waitForFunction(()=>Number(document.querySelector('.hero-scene').dataset.spread)>.8);
+    assert.equal(await page.locator('[data-logo-pose]').getAttribute('aria-pressed'),'true');
+    await page.screenshot({path:'artifacts/redesign/new-gk-separated.png'});
+    await page.locator('[data-logo-pose]').click();
+    await page.waitForFunction(()=>Number(document.querySelector('.hero-scene').dataset.spread)<.02);
+    for(const index of ['1','2','0']){
+      await page.locator('[data-logo-material]').click();
+      await page.waitForFunction(expected=>document.querySelector('.hero-scene').dataset.material===expected,index);
+      await page.screenshot({path:'artifacts/redesign/new-gk-material-'+index+'.png'});
+    }
   });
   await check('clean presentation without decorative numbers or concept badges',async()=>{
     for(const route of ['/','/projects/','/uslugi/lending/','/uslugi/sayt-kompanii/','/uslugi/internet-magazin/']){

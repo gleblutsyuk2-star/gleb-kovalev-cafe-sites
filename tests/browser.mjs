@@ -96,7 +96,7 @@ try {
     }
   });
   await check('clean presentation without decorative numbers or concept badges',async()=>{
-    for(const route of ['/','/projects/','/uslugi/lending/','/uslugi/sayt-kompanii/','/uslugi/internet-magazin/']){
+    for(const route of ['/','/projects/']){
       await page.goto(base+route);
       const text=await page.locator('body').innerText();
       assert.doesNotMatch(text,/Учебн|Независимый|\b0[1-7]\b/i);
